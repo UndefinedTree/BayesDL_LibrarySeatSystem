@@ -1,0 +1,177 @@
+/* 基础样式 */
+body {
+  background: #f5f6fa;
+  font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* 容器样式 */
+.container {
+  background: #fff;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  width: 100%;
+  max-width: 400px;
+}
+
+/* 标题样式 */
+h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 头部区域 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 10px;
+}
+
+/* 词云图容器 */
+.word-cloud-container {
+  margin-top: 20px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.word-cloud-container h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: #333;
+  text-align: center;
+}
+
+/* 词云图内容 */
+#word-cloud {
+  width: 100%;
+  height: 400px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+/* 演示按钮样式 */
+.demo-btn {
+  background: #99837f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.demo-btn:hover {
+  background: #b5a39f;
+}
+
+/* 图表样式 */
+.chart {
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+  height: 180px;
+  margin: 20px 0;
+}
+
+/* Y轴标签样式 */
+.y-labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 160px;
+  margin-right: 12px;
+  color: #99837f;
+  font-size: 14px;
+}
+
+.y-labels span {
+  height: 53px;
+  display: block;
+  text-align: right;
+}
+
+/* 柱状图容器样式 */
+.bars {
+  display: flex;
+  align-items: flex-end;
+  height: 160px;
+  flex: 1;
+  gap: 12px;
+}
+
+/* 柱状图样式 */
+.bar {
+  width: 24px;
+  background: #99837f;
+  border-radius: 4px 4px 0 0;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.bar span {
+  position: absolute;
+  bottom: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #99837f;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.bar:hover {
+  background: #b5a39f;
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 480px) {
+  .container {
+    margin: 10px;
+    padding: 15px;
+  }
+  
+  h2 {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+  
+  .chart {
+    height: 160px;
+  }
+  
+  .y-labels {
+    height: 140px;
+    margin-right: 10px;
+  }
+  
+  .y-labels span {
+    height: 46px;
+  }
+  
+  .bars {
+    height: 140px;
+    gap: 10px;
+  }
+  
+  .bar {
+    width: 20px;
+  }
+  
+  .bar span {
+    bottom: -20px;
+    font-size: 12px;
+  }
+}

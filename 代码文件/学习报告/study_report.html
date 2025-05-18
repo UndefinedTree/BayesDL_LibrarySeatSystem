@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>日均时长柱状图</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- 引入 ECharts -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.js"></script>
+  <!-- 引入词云扩展 -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts-wordcloud/dist/echarts-wordcloud.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2 id="avg-time">日均3小时27分钟</h2>
+      <button class="demo-btn" onclick="showDemoData()">演示数据</button>
+    </div>
+    <div class="chart">
+      <div class="y-labels">
+        <span>10 小时</span>
+        <span>平均</span>
+        <span>0</span>
+      </div>
+      <div class="bars" id="bars-container">
+        <div class="bar" style="height: 55%"><span>一</span></div>
+        <div class="bar" style="height: 45%"><span>二</span></div>
+        <div class="bar" style="height: 70%"><span>三</span></div>
+        <div class="bar" style="height: 75%"><span>四</span></div>
+        <div class="bar" style="height: 40%"><span>五</span></div>
+        <div class="bar" style="height: 50%"><span>六</span></div>
+        <div class="bar" style="height: 15%"><span>日</span></div>
+      </div>
+    </div>
+
+    <!-- 词云图区域 -->
+    <div class="word-cloud-container">
+      <h3>词云图</h3>
+      <div id="word-cloud" style="width: 100%; height: 400px;"></div>
+    </div>
+  </div>
+
+  <script>
+    // URL 参数解析函数
+    function getURLParams() {
+      const params = new URLSearchParams(window.location.search);
+      const data = {};
+      
+      // 支持的参数名
+      const paramNames = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'today'];
+      
+      // 解析柱状图数据
+      paramNames.forEach(name => {
+        const value = params.get(name);
+        if (value !== null) {
+          // 将字符串转换为数字
+          const num = parseFloat(value);
+          if (!isNaN(num)) {
+            data[name] = num;
+          }
+        } else {
+          // 如果没有传参数，设置为0
+          data[name] = 0;
+        }
+      });
+
+      // 解析词云图数据
+      const wordCloudData = [];
+      const wordParams = params.get('wordCloud');
+      if (wordParams) {
+        try {
+          const words = wordParams.split(',');
+          words.forEach(word => {
+            const [text, weight] = word.split(':');
+            if (text && weight) {
+              wordCloudData.push({
+                name: decodeURIComponent(text),
+                value: parseInt(weight)
+              });
+            }
+          });
+        } catch (e) {
+          console.error('解析词云图数据失败:', e);
+        }
+      }
+
+      return {
+        barData: data,
+        wordCloudData: wordCloudData.length > 0 ? wordCloudData : [
+        { name: '比赛项目', value: 100 },
+        { name: '微积分', value: 80 },
+        { name: '离散数学', value: 70 },
+        { name: '高级程序设计', value: 60 },
+        { name: '数字系统', value: 50 },
+        { name: '物理', value: 40 },
+        { name: '英语口语', value: 30 },
+        { name: '看小说', value: 20 },
+        { name: '打游戏', value: 20 },
+        { name: '练琴', value: 10 }
+        ]
+      };
+    }
+
+    // 数据接口
+    const ChartData = {
+      data: {}, // 初始为空，由 URL 参数填充
+      updateData: function(newData) {
+        // 更新数据
+        Object.assign(this.data, newData);
+        // 更新图表
+        this.updateChart();
+      },
+      updateChart: function() {
+        const bars = document.getElementById('bars-container').children;
+        let total = 0;
+        
+        for (let i = 0; i < bars.length; i++) {
+          const day = Object.keys(this.data)[i];
+          const value = this.data[day];
+          total += value;
+          const height = (value / 10) * 100; // 将小时数转换为百分比（最大10小时）
+          bars[i].style.height = height + '%';
+        }
+        
+        const avg = (total / bars.length).toFixed(2);
+        const avgTime = Math.floor(avg) + '小时' + Math.round((avg % 1) * 60) + '分钟';
+        document.getElementById('avg-time').textContent = '日均' + avgTime;
+      }
+    };
+
+    // 初始化图表
+    // 先获取 URL 参数
+    const urlParams = getURLParams();
+    // 使用 URL 参数更新数据
+    ChartData.updateData(urlParams.barData);
+
+    // 初始化词云图数据
+    const wordCloudData = urlParams.wordCloudData || defaultWordCloudData;
+
+    // 使用示例：
+    // ChartData.updateData({
+    //   monday: 4.0,
+    //   tuesday: 3.5,
+    //   wednesday: 4.5,
+    //   thursday: 5.0,
+    //   friday: 2.5,
+    //   saturday: 3.5,
+    //   today: 1.0
+    // });
+    // 演示数据
+    const demoData = {
+      monday: 7.5,
+      tuesday: 5.5,
+      wednesday: 8.0,
+      thursday: 7.0,
+      friday: 5.0,
+      saturday: 7.5,
+      today: 4.5
+    };
+
+    function showDemoData() {
+      ChartData.updateData(demoData);
+    }
+
+    // 词云图数据（默认值）
+    const defaultWordCloudData = [
+      { name: '比赛项目', value: 100 },
+      { name: '微积分', value: 80 },
+      { name: '离散数学', value: 70 },
+      { name: '高级程序设计', value: 60 },
+      { name: '数字系统', value: 50 },
+      { name: '物理', value: 40 },
+      { name: '英语口语', value: 30 },
+      { name: '看小说', value: 20 },
+      { name: '打游戏', value: 20 },
+      { name: '练琴', value: 10 }
+    ];
+
+    // 初始化词云图
+    function initWordCloud() {
+      // 确保容器有尺寸
+      const container = document.getElementById('word-cloud');
+      container.style.width = '100%';
+      container.style.height = '400px';
+      
+      const chart = echarts.init(container);
+      
+      const option = {
+        tooltip: {
+          show: true
+        },
+        series: [{
+          type: 'wordCloud',
+          shape: 'circle',
+          symbolSize: [12, 60],
+          textStyle: {
+            color: '#99837f',
+            fontWeight: 'bold',
+            fontFamily: 'Arial, sans-serif'
+          },
+          data: wordCloudData
+        }]
+      };
+
+      chart.setOption(option);
+    }
+
+    // 添加词云图演示按钮
+    const wordCloudDemoBtn = document.createElement('button');
+    wordCloudDemoBtn.className = 'demo-btn';
+    wordCloudDemoBtn.textContent = '词云演示';
+    wordCloudDemoBtn.onclick = initWordCloud;
+    document.querySelector('.header').appendChild(wordCloudDemoBtn);
+
+    // 确保 DOM 完全加载后再初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded');
+      const container = document.getElementById('word-cloud');
+      console.log('Container dimensions:', container.offsetWidth, container.offsetHeight);
+      initWordCloud();
+    });
+
+  </script>
+</body>
+</html>
